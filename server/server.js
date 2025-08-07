@@ -18,6 +18,12 @@ const io = new Server(server, {
 
 // Handle connection
 io.on('connection', (socket) => {
+
+
+  socket.on('sendMove',(move)=>{
+  io.to(pairedMap[socket.id]).emit('recieveMove',move);
+})
+
     
   console.log(`New client connected: ${socket.id}`);
 
@@ -74,6 +80,8 @@ io.on('connection', (socket) => {
     }
   });
 });
+
+
 
 server.listen(4000, () => {
   console.log('Socket.IO server running on http://localhost:4000');
