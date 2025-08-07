@@ -17,7 +17,10 @@ function Board() {
     const [socketId, setSocketId] = useState('');
 const [currentStatus,setStatus]=useState('');
 const [partner,setPartner]=useState('');
+const [isMyturn,setTurn]=useState(false)
+const [color,setColor]=useState()
 const socketRef = useRef(null)
+
 
 
   useEffect(() => {
@@ -31,14 +34,17 @@ const socketRef = useRef(null)
     socket.on('wait',(msg)=>{
       setStatus(msg);
     })
-    socket.on('pairedUp',(partner)=>{
+    socket.on('pairedUp',({color,partner})=>{
       setStatus(`You are paired up with: ${partner}`)
       setPartner(partner);
+      setColor(color)
+      setTurn(color==='white')
     })
     socket.on('recieveMove',(position)=>{
       chessGame.load(position);
 
       setChessPosition(position);
+      setTurn(true)
     })
     
 
@@ -59,6 +65,8 @@ const socketRef = useRef(null)
       if (!targetSquare) {
         return false;
       }
+      if(!isMyturn)
+        return false;
 
       // try to make the move according to chess.js logic
       try {
@@ -73,8 +81,9 @@ const socketRef = useRef(null)
         setChessPosition(chessGame.fen());
          chessGame.load(chessGame.fen());
         const socket = socketRef.current;
+
         socket.emit('sendMove',chessGame.fen());
-        
+        setTurn(false);
         
 
         
@@ -94,6 +103,8 @@ const socketRef = useRef(null)
     const chessboardOptions = {
       position: chessPosition,
       onPieceDrop,
+      boardOrientation: color === 'black' ? 'black' : 'white',
+      
       
     };
 

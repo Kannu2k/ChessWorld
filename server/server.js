@@ -35,8 +35,8 @@ io.on('connection', (socket) => {
   else
   {
     const partner = line[0];
-    io.to(partner).emit('pairedUp', socket.id);
-    io.to(socket.id).emit('pairedUp', partner);
+    io.to(partner).emit('pairedUp',{color:'white',partner:socket.id});
+    io.to(socket.id).emit('pairedUp',{color:'black',partner:partner});
     pairedMap[partner]=socket.id;
     pairedMap[socket.id]=partner;
 
